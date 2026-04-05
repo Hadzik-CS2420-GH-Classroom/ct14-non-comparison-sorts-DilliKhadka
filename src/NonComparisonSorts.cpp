@@ -72,9 +72,36 @@ void bucket_sort(std::vector<int>& data, int num_buckets) {
 // ? SEE DIAGRAM: cpp_diagrams.md #6 -- Passes 2-3 (Stability in Action)
 //
 void radix_sort(std::vector<int>& data) {
-   
-}
+    if (data.size() <= 1) return;
 
+    int max_val = *std::max_element(data.begin(), data.end());
+
+    for (int exp = 1; max_val / exp > 0; exp *= 10) {
+        std::vector<int> output(data.size());
+        std::vector<int> count(10, 0);
+
+        // count digits
+        for (int i = 0; i < data.size(); i++) {
+            int digit = (data[i] / exp) % 10;
+            count[digit]++;
+        }
+
+        // prefix sum
+        for (int i = 1; i < 10; i++) {
+            count[i] += count[i - 1];
+        }
+
+        // build output (RIGHT TO LEFT → important!)
+        for (int i = data.size() - 1; i >= 0; i--) {
+            int digit = (data[i] / exp) % 10;
+            output[count[digit] - 1] = data[i];
+            count[digit]--;
+        }
+
+        // copy back
+        data = output;
+    }
+}
 
 
 // ---------------------------------------------------------------------------
